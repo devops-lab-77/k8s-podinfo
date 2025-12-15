@@ -1,0 +1,45 @@
+name: DNS resolution check
+
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: "Domain to resolve"
+        required: true
+        default: "rso.dev"
+
+jobs:
+  dns:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Show resolver config
+        run: |
+          echo "=== /etc/resolv.conf ==="
+          cat /etc/resolv.conf || true
+
+      - name: Resolve domain
+        run: |
+          DOMAIN="${{ github.event.inputs.domain }}"
+
+          echo "Resolving: $DOMAIN"
+          echo
+
+          echo "=== dig A ==="
+          dig +noall +answer "$DOMAIN" A || true
+          echo
+
+          echo "=== dig AAAA ==="
+          dig +noall +answer "$DOMAIN" AAAA || true
+          echo
+
+          echo "=== dig CNAME ==="
+          dig +noall +answer "$DOMAIN" CNAME || true
+          echo
+
+          echo "=== dig NS ==="
+          dig +noall +answer "$DOMAIN" NS || true
+          echo
+
+          echo "=== getent (system resolver) ==="
+          getent ahosts "$DOMAIN" || true
