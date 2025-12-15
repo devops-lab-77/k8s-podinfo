@@ -4,9 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       domain:
-        description: "Domain to resolve"
+        description: "Select domain"
         required: true
-        default: "rso.dev"
+        type: choice
+        options:
+          - rso.dev
+          - rso.bg
+          - rso-hosting.com
+        default: rso.dev
 
 jobs:
   dns:
